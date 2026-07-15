@@ -7,7 +7,21 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const GRIP_LOGO_FILENAME = 'logo.png';
+/** Default Cloudinary URL for GRIP Proud Associate badge (never use localhost in generated sites). */
+export const DEFAULT_GRIP_LOGO_URL =
+  'https://res.cloudinary.com/dexrm9ve9/image/upload/v1784109653/ai-website-builder/grip-proud-associate-logo.png';
+
 export const GRIP_FIX_MARKER = '/* GRIP generated-site layout fixes */';
+export const FONT_AWESOME_CDN =
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css';
+
+export const FONT_AWESOME_LINK = `<link rel="stylesheet" href="${FONT_AWESOME_CDN}" crossorigin="anonymous" referrerpolicy="no-referrer" />`;
+
+export function getSiteHeadAssets() {
+  return `${FONT_AWESOME_LINK}
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />`;
+}
 
 export function ensureGripLogoAsset() {
   const uploadsDir = path.join(__dirname, '..', '..', 'public', 'uploads');
@@ -35,8 +49,9 @@ export function ensureGripLogoAsset() {
 }
 
 export function getGripLogoUrl() {
-  ensureGripLogoAsset();
-  return getLocalUploadsUrl(GRIP_LOGO_FILENAME);
+  const fromEnv = (process.env.GRIP_LOGO_URL || process.env.GRIP_LOGO_CLOUDINARY_URL || '').trim();
+  if (fromEnv) return fromEnv;
+  return DEFAULT_GRIP_LOGO_URL;
 }
 
 const LAYOUT_FIX_CSS = `
@@ -62,33 +77,137 @@ section, #header, #about, #services, #why-us, #connect-form, #contact {
 h1, h2, h3, h4, h5, h6 { font-family: 'Poppins', sans-serif !important; }
 
 #header {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  flex-wrap: wrap !important;
-  gap: 24px !important;
-  padding: 40px 24px !important;
+  display: block !important;
+  padding: 20px 12px !important;
   max-width: 1200px !important;
   margin: 0 auto !important;
   width: 100% !important;
   background: #fff !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+}
+/* Mobile-first header: center on top, GRIP badges in a row below (never side overflow) */
+#header .header-wrapper {
+  display: grid !important;
+  grid-template-columns: 64px 64px !important;
+  justify-content: center !important;
+  justify-items: center !important;
+  align-items: center !important;
+  column-gap: 24px !important;
+  row-gap: 14px !important;
+  padding: 8px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+#header .header-center,
+#header > div:nth-child(2),
+#header .header-wrapper > div:nth-child(2) {
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  text-align: center !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 10px !important;
+  box-sizing: border-box !important;
+  padding: 0 4px !important;
 }
 #header img[alt*="GRIP"],
 #header img[alt*="Proud"],
 #header .grip-badge,
 #header .grip-badge img {
-  width: 100px !important;
-  height: 100px !important;
-  max-width: 100px !important;
+  width: 64px !important;
+  height: 64px !important;
+  max-width: 64px !important;
+  max-height: 64px !important;
   object-fit: contain !important;
   flex-shrink: 0 !important;
   display: block !important;
+  margin: 0 !important;
 }
-#header .header-center,
-#header > div:nth-child(2) {
-  flex: 1 1 280px !important;
+#header .company-logo,
+#header .header-center img:not(.grip-badge) {
+  width: 72px !important;
+  height: 72px !important;
+  max-width: 72px !important;
+  max-height: 72px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  display: block !important;
+  margin: 0 auto !important;
+}
+#header h1 {
+  font-size: 26px !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
   text-align: center !important;
-  min-width: 0 !important;
+  word-break: break-word !important;
+  max-width: 100% !important;
+}
+#header h2 {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+  text-align: center !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.4px !important;
+  color: #6C757D !important;
+  max-width: 100% !important;
+  padding: 0 4px !important;
+  line-height: 1.4 !important;
+  word-break: break-word !important;
+}
+#header .contact-info,
+#header p {
+  font-size: 12px !important;
+  margin: 0 !important;
+  text-align: center !important;
+  max-width: 100% !important;
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+}
+@media (min-width: 769px) {
+  #header { padding: 24px 16px !important; }
+  #header .header-wrapper {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 24px !important;
+    padding: 16px !important;
+    grid-template-columns: none !important;
+  }
+  #header .header-center {
+    grid-column: auto !important;
+    flex: 1 1 auto !important;
+    width: auto !important;
+  }
+  #header img[alt*="GRIP"],
+  #header img[alt*="Proud"],
+  #header .grip-badge,
+  #header .grip-badge img {
+    width: 100px !important;
+    height: 100px !important;
+    max-width: 100px !important;
+    max-height: 100px !important;
+  }
+  #header .company-logo,
+  #header .header-center img:not(.grip-badge) {
+    width: 80px !important;
+    height: 80px !important;
+    max-width: 80px !important;
+    max-height: 80px !important;
+  }
+  #header h1 { font-size: clamp(28px, 4vw, 36px) !important; }
+  #header h2 { font-size: clamp(13px, 2vw, 15px) !important; }
+  #header .contact-info,
+  #header p { font-size: 14px !important; }
 }
 
 #about { padding: 80px 20px !important; background: #fff !important; }
@@ -132,23 +251,164 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Poppins', sans-serif !important; }
   display: block !important;
 }
 
-#why-us { padding: 80px 20px !important; background: #fff !important; }
-#why-us .why-grid,
-#why-us > div > div:not(:first-child),
-#why-us [class*="grid"] {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
-  gap: 20px !important;
+#why-us,
+section[id="why-us"] {
+  padding: 80px 20px !important;
+  background: #fff !important;
+  text-align: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+#why-us .section-header,
+#why-us .section-label,
+#why-us .pill-badge {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  margin-bottom: 40px !important;
+  text-align: center !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+}
+#why-us .container {
   max-width: 1100px !important;
   margin: 0 auto !important;
   width: 100% !important;
+  padding: 0 12px !important;
 }
+#why-us .why-us-grid,
+#why-us .why-grid,
+#why-us [class*="why"][class*="grid"],
+#why-us > div > div:not(.section-header):not(:first-child) {
+  /* Mobile-first: ALWAYS stack — AI often uses flex-row which ignores grid-template-columns */
+  display: flex !important;
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  gap: 16px !important;
+  max-width: 1100px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+#why-us .why-us-card,
+#why-us .why-card,
+#why-us [class*="why"][class*="card"],
 #why-us [class*="card"] {
   background: #fff !important;
   border: 1px solid #E5E7EB !important;
   border-radius: 16px !important;
-  padding: 32px 24px !important;
+  padding: 28px 18px !important;
   text-align: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  flex: 0 0 auto !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  box-shadow: none !important;
+}
+#why-us .why-us-card h3,
+#why-us .why-us-card h4,
+#why-us [class*="card"] h3,
+#why-us [class*="card"] h4 {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  margin: 0 0 10px !important;
+  color: #212529 !important;
+  text-align: center !important;
+  width: 100% !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  hyphens: none !important;
+}
+#why-us .why-us-card p,
+#why-us [class*="card"] p {
+  font-size: 14px !important;
+  color: #6C757D !important;
+  margin: 0 !important;
+  text-align: center !important;
+  width: 100% !important;
+  line-height: 1.6 !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+}
+@media (min-width: 640px) {
+  #why-us .why-us-grid,
+  #why-us .why-grid,
+  #why-us [class*="why"][class*="grid"] {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    flex-direction: unset !important;
+    gap: 20px !important;
+  }
+}
+@media (min-width: 1024px) {
+  #why-us .why-us-grid,
+  #why-us .why-grid,
+  #why-us [class*="why"][class*="grid"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+  #why-us .why-us-card h3,
+  #why-us .why-us-card h4,
+  #why-us [class*="card"] h3,
+  #why-us [class*="card"] h4 {
+    font-size: 20px !important;
+  }
+}
+#why-us .why-us-card img,
+#why-us .why-card img,
+#why-us [class*="why"][class*="card"] img,
+#why-us .company-logo {
+  display: none !important;
+}
+#why-us .icon-wrapper,
+#why-us .why-us-icon,
+#why-us .why-us-icon-circle {
+  width: 70px !important;
+  height: 70px !important;
+  min-width: 70px !important;
+  min-height: 70px !important;
+  max-width: 70px !important;
+  max-height: 70px !important;
+  margin: 0 auto 20px !important;
+  border: 2px solid #E63946 !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 70px !important;
+  overflow: visible !important;
+  background: #fff !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+#why-us .icon-wrapper i,
+#why-us .why-us-icon i,
+#why-us .why-us-icon-circle i,
+#why-us i[class*="fa"] {
+  color: #E63946 !important;
+  font-size: 28px !important;
+  line-height: 1 !important;
+  display: inline-block !important;
+  width: 1em !important;
+  height: 1em !important;
+  max-width: none !important;
+  max-height: none !important;
+  flex-shrink: 0 !important;
+  font-style: normal !important;
+  font-variant: normal !important;
+  text-rendering: auto !important;
+  -webkit-font-smoothing: antialiased !important;
 }
 
 #connect-form,
@@ -378,53 +638,95 @@ footer#contact {
   display: none !important;
 }
 
-@media (max-width: 768px) {
-  /* 1. Global section padding scaling */
+@media (max-width: 639px) {
+  /* Final mobile kill-switch — must win over AI flex-row / 4-col grids */
   section, #header, #about, #services, #why-us, #connect-form, #contact {
-    padding: 60px 16px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
   }
-  
-  /* 2. Header collapser & alignments */
   #header {
-    flex-direction: column !important;
-    text-align: center !important;
-    padding: 30px 16px !important;
+    overflow-x: hidden !important;
+    padding: 20px 12px !important;
   }
-  #header .grip-badge {
-    margin: 0 auto !important;
+  #header .header-wrapper {
+    display: grid !important;
+    grid-template-columns: 64px 64px !important;
+    justify-content: center !important;
+    justify-items: center !important;
+    column-gap: 20px !important;
+    row-gap: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+  #header .header-center {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+  }
+  #header .grip-badge,
+  #header img[alt*="GRIP"],
+  #header img[alt*="Proud"] {
+    width: 64px !important;
+    height: 64px !important;
+    max-width: 64px !important;
+    max-height: 64px !important;
   }
 
-  /* 3. Global grid collapser to 1 column */
-  [class*="grid"], 
-  [class*="row"],
+  #why-us .why-us-grid,
+  #why-us .why-grid,
+  #why-us [class*="why"][class*="grid"],
+  .why-us-grid,
+  .why-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    grid-template-columns: none !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+  #why-us .why-us-card,
+  #why-us .why-card,
+  .why-us-card {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
+  }
+
   .about-grid,
   .services-grid,
-  .why-grid,
   .contact-cards,
   .footer-grid {
-    grid-template-columns: 1fr !important;
+    display: flex !important;
     flex-direction: column !important;
-    gap: 20px !important;
+    grid-template-columns: none !important;
   }
 
-  /* 4. Font scale adjustments to prevent overflow */
-  h1, .h1 { font-size: 28px !important; line-height: 1.2 !important; }
-  h2, .h2 { font-size: 24px !important; line-height: 1.2 !important; }
-  h3, .h3 { font-size: 20px !important; }
-  
-  /* 5. Image & Video fitting */
   img, video, iframe {
-    width: 100% !important;
-    height: auto !important;
     max-width: 100% !important;
-    border-radius: 12px !important;
+    height: auto !important;
   }
-  
-  /* 6. Form elements adjustments */
+  #about img, #services img {
+    width: 100% !important;
+  }
+  #why-us .icon-wrapper,
+  #why-us .why-us-icon,
+  #why-us .why-us-icon-circle {
+    width: 70px !important;
+    height: 70px !important;
+    min-width: 70px !important;
+    min-height: 70px !important;
+    max-width: 70px !important;
+    max-height: 70px !important;
+    flex: 0 0 70px !important;
+  }
+
   #connect-form form,
   #connect-form .contact-form {
     padding: 24px 16px !important;
-    border-radius: 12px !important;
     width: 100% !important;
   }
   #connect-form .captcha-row,
@@ -439,16 +741,12 @@ footer#contact {
     flex: 1 1 auto !important;
   }
   #connect-form .captcha-row input,
-  .contact-form .captcha-row input {
-    border-radius: 8px !important;
-    margin: 4px 0 !important;
-  }
+  .contact-form .captcha-row input,
   #connect-form .captcha-row button,
   .contact-form .captcha-row button {
     border-radius: 8px !important;
     width: 100% !important;
   }
-
 }
 `;
 
@@ -456,12 +754,26 @@ function fixLocalhostUrls(html) {
   const base = getPublicBaseUrl();
   return html
     .replace(/https?:\/\/localhost:5001\//gi, `${base}/`)
-    .replace(/https?:\/\/127\.0\.0\.1:5001\//gi, `${base}/`);
+    .replace(/https?:\/\/127\.0\.0\.1:5001\//gi, `${base}/`)
+    .replace(/https?:\/\/localhost:5014\//gi, `${base}/`)
+    .replace(/https?:\/\/127\.0\.0\.1:5014\//gi, `${base}/`)
+    .replace(/https?:\/\/localhost:\d+\//gi, `${base}/`)
+    .replace(/https?:\/\/127\.0\.0\.1:\d+\//gi, `${base}/`);
 }
 
 function fixGripLogoImages(html) {
   const logoUrl = getGripLogoUrl();
   let fixed = fixLocalhostUrls(html);
+
+  // Replace any local/uploads logo.png references with Cloudinary (or configured) URL
+  fixed = fixed.replace(
+    /https?:\/\/[^"'>\s]+\/uploads\/logo\.png/gi,
+    logoUrl
+  );
+  fixed = fixed.replace(
+    /(["'])\/uploads\/logo\.png\1/gi,
+    `$1${logoUrl}$1`
+  );
 
   // Match only the GRIP badge images (using class name or exact alt text)
   fixed = fixed.replace(
@@ -487,6 +799,84 @@ function fixGripLogoImages(html) {
   return fixed;
 }
 
+function normalizeWhyUsSection(html) {
+  if (!/id=["']why-us["']/i.test(html)) return html;
+
+  const defaultIcons = [
+    'fa-solid fa-handshake',
+    'fa-solid fa-earth-americas',
+    'fa-solid fa-sliders',
+    'fa-solid fa-headset',
+  ];
+
+  return html.replace(
+    /(<section[^>]*id=["']why-us["'][^>]*>)([\s\S]*?)(<\/section>)/i,
+    (match, open, inner, close) => {
+      const cardOpenRe = /<(div|article)([^>]*\b(?:why-us-card|why-card)\b[^>]*)>/gi;
+      let result = '';
+      let lastIndex = 0;
+      let cardIndex = 0;
+      let cardMatch;
+
+      while ((cardMatch = cardOpenRe.exec(inner)) !== null) {
+        const tag = cardMatch[1];
+        const attrs = cardMatch[2];
+        const start = cardMatch.index;
+        const contentStart = cardOpenRe.lastIndex;
+
+        result += inner.slice(lastIndex, start);
+
+        // Walk forward with tag depth to find matching close tag
+        let depth = 1;
+        let i = contentStart;
+        const openTag = new RegExp(`<${tag}\\b`, 'gi');
+        const closeTag = new RegExp(`</${tag}>`, 'gi');
+
+        while (i < inner.length && depth > 0) {
+          openTag.lastIndex = i;
+          closeTag.lastIndex = i;
+          const nextOpen = openTag.exec(inner);
+          const nextClose = closeTag.exec(inner);
+
+          if (!nextClose) break;
+
+          if (nextOpen && nextOpen.index < nextClose.index) {
+            depth += 1;
+            i = nextOpen.index + nextOpen[0].length;
+          } else {
+            depth -= 1;
+            i = nextClose.index + nextClose[0].length;
+            if (depth === 0) {
+              let cardInner = inner.slice(contentStart, nextClose.index);
+              const iconClass = defaultIcons[cardIndex % defaultIcons.length];
+              cardIndex += 1;
+
+              cardInner = cardInner.replace(/<img\b[^>]*>/gi, '');
+
+              if (!/<i\b[^>]*class=["'][^"']*fa[^"']*["']/i.test(cardInner)) {
+                cardInner = `\n<div class="icon-wrapper"><i class="${iconClass}"></i></div>${cardInner}`;
+              } else if (!/icon-wrapper|why-us-icon|why-us-icon-circle/i.test(cardInner)) {
+                cardInner = cardInner.replace(
+                  /(<i\b[^>]*class=["'][^"']*fa[^"']*["'][^>]*>\s*<\/i>)/i,
+                  '\n<div class="icon-wrapper">$1</div>'
+                );
+              }
+
+              result += `<${tag}${attrs}>${cardInner}</${tag}>`;
+              lastIndex = i;
+            }
+          }
+        }
+
+        cardOpenRe.lastIndex = lastIndex;
+      }
+
+      result += inner.slice(lastIndex);
+      return `${open}${result}${close}`;
+    }
+  );
+}
+
 function normalizeHtmlStructure(html) {
   let fixed = html
     .replace(/\scontenteditable="[^"]*"/gi, '')
@@ -494,7 +884,9 @@ function normalizeHtmlStructure(html) {
     .replace(/\sdata-html-editable="[^"]*"/gi, '')
     .replace(/<div><br><\/div>/gi, '<br>');
 
-  if (/#connect-form/i.test(fixed) && !/class=["'][^"']*form-field/i.test(fixed)) {
+  fixed = normalizeWhyUsSection(fixed);
+
+  if (/id=["']connect-form["']/i.test(fixed) && !/class=["'][^"']*form-field/i.test(fixed)) {
     fixed = fixed.replace(
       /(<form[^>]*>)([\s\S]*?)(<\/form>)/i,
       (match, formOpen, inner, formClose) => {
@@ -649,35 +1041,41 @@ export function postProcessGeneratedSite(html = '', css = '', website = {}) {
 
   const { bodyHtml, embeddedStyles } = extractEmbeddedStyles(html);
   let fixedHtml = fixGripLogoImages(bodyHtml);
-  fixedHtml = normalizeHtmlStructure(fixedHtml);
 
   const mergedCss = mergeCssSources(css, ...embeddedStyles);
 
   if (website.logo) {
     const companyLogo = website.logo;
+    const logoImg = `<img src="${companyLogo}" alt="${website.companyName || 'Logo'}" class="company-logo" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid #E63946;">`;
 
-    // 1. Replace the company logo placeholder div if present
+    // Scope strictly to header-center so why-us icons are never replaced
     fixedHtml = fixedHtml.replace(
-      /<div[^>]*class=["'][^"']*(logo-placeholder|company-logo-placeholder)[^"']*["'][^>]*>[\s\S]*?<\/div>/i,
-      `<img src="${companyLogo}" alt="${website.companyName || 'Logo'}" class="company-logo" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid #E63946;">`
-    );
-
-    // 2. Fallback replacement if the AI generated a FontAwesome wrapper div in the center column
-    fixedHtml = fixedHtml.replace(
-      /(<div[^>]*class=["'][^"']*header-center[^"']*["'][^>]*>[\s\S]*?<div[^>]*class=["'][^"']*(circle|icon|logo)[^"']*["'][^>]*>[\s\S]*?<\/div>)/i,
-      (match, outerWrapper) => {
-        return outerWrapper.replace(/<div[^>]*class=["'][^"']*(circle|icon|logo)[^"']*["'][^>]*>[\s\S]*?<\/div>/i, 
-          `<img src="${companyLogo}" alt="${website.companyName || 'Logo'}" class="company-logo" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid #E63946;">`
+      /(<div[^>]*class=["'][^"']*header-center[^"']*["'][^>]*>)([\s\S]*?)(<\/div>)/i,
+      (match, open, inner, close) => {
+        let next = inner.replace(
+          /<div[^>]*class=["'][^"']*(logo-placeholder|company-logo-placeholder)[^"']*["'][^>]*>[\s\S]*?<\/div>/i,
+          logoImg
         );
+
+        if (/company-logo|\blogo\b/i.test(next) && /<img\b/i.test(next)) {
+          next = next.replace(
+            /(<img[^>]*class=["'][^"']*(?:company-logo|logo)[^"']*["'][^>]*src=["'])[^"']*(["'])/i,
+            `$1${companyLogo}$2`
+          );
+        } else if (/<div[^>]*class=["'][^"']*(?:circle|logo)[^"']*["'][^>]*>[\s\S]*?<\/div>/i.test(next)) {
+          next = next.replace(
+            /<div[^>]*class=["'][^"']*(?:circle|logo)[^"']*["'][^>]*>[\s\S]*?<\/div>/i,
+            logoImg
+          );
+        }
+
+        return `${open}${next}${close}`;
       }
     );
-
-    // 3. Update existing company logo image tag src if already present
-    fixedHtml = fixedHtml.replace(
-      /(<img[^>]*class=["'][^"']*(company-logo|logo)[^"']*["'][^>]*src=["'])[^"']*(["'])/i,
-      `$1${companyLogo}$3`
-    );
   }
+
+  // Repair why-us AFTER logo injection so company logos never overwrite icons
+  fixedHtml = normalizeHtmlStructure(fixedHtml);
 
   return {
     html: fixedHtml,

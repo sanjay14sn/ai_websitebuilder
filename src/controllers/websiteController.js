@@ -4,7 +4,7 @@ import WebsiteVersion from '../models/WebsiteVersion.js';
 import { writeToKV, deleteFromKV } from '../services/cloudflare.js';
 import { compileLayoutToSite } from '../services/layoutCompiler.js';
 import { cleanBodyHtmlForSave, buildEditableSiteDocument, getStoredCss } from '../services/htmlEditor.js';
-import { postProcessGeneratedSite, extractBodyHtml } from '../services/sitePostProcessor.js';
+import { postProcessGeneratedSite, extractBodyHtml, getSiteHeadAssets } from '../services/sitePostProcessor.js';
 import { generateSiteCode, generateAiHelperProfile } from '../services/aiGenerator.js';
 import nodemailer from 'nodemailer';
 
@@ -423,6 +423,7 @@ export const previewWebsite = async (req, res) => {
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <title>${website.companyName || 'Business Website'}</title>
+          ${getSiteHeadAssets()}
           <style>
             ${processed.css || ''}
           </style>
@@ -489,6 +490,7 @@ export const publishWebsite = async (req, res) => {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${website.companyName || 'Business Website'}</title>
+    ${getSiteHeadAssets()}
     <style>
         ${processed.css || ''}
     </style>

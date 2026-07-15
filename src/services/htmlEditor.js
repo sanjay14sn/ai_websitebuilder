@@ -1,6 +1,6 @@
 /** Inline-editing wrapper for AI-generated site HTML (same output as /preview). */
 
-import { postProcessGeneratedSite } from './sitePostProcessor.js';
+import { postProcessGeneratedSite, getSiteHeadAssets } from './sitePostProcessor.js';
 
 const EDIT_CSS = `
   body.html-edit-mode form,
@@ -158,6 +158,7 @@ export function buildEditableSiteDocument(website) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${title}</title>
+  ${getSiteHeadAssets()}
   <style>${css}</style>
 </head>
 <body>

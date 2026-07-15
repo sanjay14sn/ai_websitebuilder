@@ -286,16 +286,19 @@ ${servicesPrompt}
    - Each card MUST have the image at the top (height: 200px, width: 100%, object-fit: cover), followed by service title (bold, left-aligned, Poppins, padding: 20px 20px 5px 20px), and description (left-aligned, Inter, color #6C757D, padding: 0 20px 20px 20px). No buttons inside cards.
 
 4. WHY CHOOSE US SECTION (id="why-us"):
-   - Padded section (padding: 80px 0), background: #FFFFFF.
-   - Header: Centered label "• WHY CHOOSE US" (uppercase, red bullet dot on the left, styled in a pill badge like Services).
-   - Row/Grid: 4 columns (desktop), responsive on mobile.
-   - Exactly 4 cards:
-     - White background, border-radius: 16px, border: 1px solid #E5E7EB, padding: 40px, text-align: center.
+   - Padded section (padding: 80px 0), background: #FFFFFF, text-align: center.
+   - Header: Centered pill label "• WHY CHOOSE US" (uppercase, red bullet, same pill badge style as Services). MUST be horizontally centered.
+   - Grid: class="why-us-grid" with exactly 4 equal columns on desktop (display:grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1100px; margin: 0 auto). On mobile: 1 column.
+   - Exactly 4 cards with class="why-us-card":
+     - White background, border-radius: 16px, border: 1px solid #E5E7EB, padding: 32px 20px, text-align: center.
      - Card items:
 ${whyUsPrompt}
-     - Icon style: FontAwesome icon inside a red circular border (color #E63946, border 2px solid #E63946, width 70px, height 70px, display flex, justify-content: center, align-items: center, border-radius: 50%, margin: 0 auto 20px).
-     - Title: Bold Poppins 20px.
-     - Description: Inter, color #6C757D.
+   - CRITICAL ICON RULES (do not break):
+     - EVERY card MUST start with: <div class="icon-wrapper"><i class="fa-solid fa-..."></i></div>
+     - Use ONLY FontAwesome icons (fa-handshake, fa-earth-americas, fa-sliders, fa-headset). NEVER use <img>, company logo, company name text, or placeholders as icons.
+     - icon-wrapper MUST be a fixed 70x70 circle (border: 2px solid #E63946; border-radius: 50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 20px).
+     - Icon color #E63946, font-size 28px. Never stretch icons.
+     - Title: Bold Poppins 20px, centered. Description: Inter, #6C757D, centered.
 
 5. LET'S CONNECT CONTACT FORM SECTION (id="connect-form"):
    - Padded section (padding: 80px 0), background: #FFFFFF.
