@@ -877,7 +877,85 @@ function normalizeWhyUsSection(html) {
   );
 }
 
-function normalizeHtmlStructure(html) {
+function escapeHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function extractContactCardText(cardHtml = '') {
+  const heading = (cardHtml.match(/<h[34][^>]*>([\s\S]*?)<\/h[34]>/i) || [])[1] || '';
+  const paragraph = (cardHtml.match(/<p[^>]*>([\s\S]*?)<\/p>/i) || [])[1] || '';
+  const strip = (s) =>
+    String(s)
+      .replace(/<[^>]+>/g, '')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .trim();
+  return { heading: strip(heading), paragraph: strip(paragraph), raw: cardHtml };
+}
+
+/**
+ * Contact cards order: Company → Address → Phone → Email.
+ * Replaces any "Visit Website" / globe card with Address, placed before phone.
+ */
+function normalizeContactCards(html, website = {}) {
+  if (!/<div[^>]*class=["'][^"']*contact-cards/i.test(html)) return html;
+
+  return html.replace(
+    /(<div[^>]*class=["'][^"']*contact-cards[^"']*["'][^>]*>)((?:\s*<div[^>]*class=["'][^"']*contact-card[^"']*["'][^>]*>[\s\S]*?<\/div>\s*)+)(<\/div>)/i,
+    (match, open, inner, close) => {
+      const cardRe = /<div[^>]*class=["'][^"']*contact-card[^"']*["'][^>]*>[\s\S]*?<\/div>/gi;
+      const cards = [];
+      let m;
+      while ((m = cardRe.exec(inner)) !== null) {
+        cards.push(extractContactCardText(m[0]));
+      }
+      if (cards.length === 0) return match;
+
+      const byIcon = (re) => cards.find((c) => re.test(c.raw));
+      const companyCard = byIcon(/fa-user/i);
+      const phoneCard = byIcon(/fa-phone/i);
+      const emailCard = byIcon(/fa-envelope/i);
+      const addressCard = byIcon(/fa-map-marker|fa-location|fa-home/i);
+
+      const companyName =
+        website.companyName ||
+        companyCard?.heading ||
+        cards[0]?.heading ||
+        'Company';
+      const address =
+        website.location ||
+        addressCard?.heading ||
+        (companyCard?.paragraph && !/^company$/i.test(companyCard.paragraph)
+          ? companyCard.paragraph
+          : '') ||
+        'Address not provided';
+      const phone = website.phoneNumber || phoneCard?.heading || '';
+      const email = website.email || emailCard?.heading || '';
+
+      const renderCard = (iconClass, title, subtitle) =>
+        `<div class="contact-card"><i class="${iconClass}"></i><h4>${escapeHtml(title)}</h4><p>${escapeHtml(subtitle)}</p></div>`;
+
+      const rebuilt = [
+        renderCard('fas fa-user', companyName, 'Company'),
+        renderCard('fas fa-map-marker-alt', address, 'Address'),
+        renderCard('fas fa-phone-alt', phone || 'Phone', 'Call Us'),
+        renderCard('fas fa-envelope', email || 'Email', 'Drop a Mail'),
+      ].join('');
+
+      return `${open}${rebuilt}${close}`;
+    }
+  );
+}
+
+function normalizeHtmlStructure(html, website = {}) {
   let fixed = html
     .replace(/\scontenteditable="[^"]*"/gi, '')
     .replace(/\sspellcheck="[^"]*"/gi, '')
@@ -885,6 +963,7 @@ function normalizeHtmlStructure(html) {
     .replace(/<div><br><\/div>/gi, '<br>');
 
   fixed = normalizeWhyUsSection(fixed);
+  fixed = normalizeContactCards(fixed, website);
 
   if (/id=["']connect-form["']/i.test(fixed) && !/class=["'][^"']*form-field/i.test(fixed)) {
     fixed = fixed.replace(
@@ -1075,7 +1154,7 @@ export function postProcessGeneratedSite(html = '', css = '', website = {}) {
   }
 
   // Repair why-us AFTER logo injection so company logos never overwrite icons
-  fixedHtml = normalizeHtmlStructure(fixedHtml);
+  fixedHtml = normalizeHtmlStructure(fixedHtml, website);
 
   return {
     html: fixedHtml,

@@ -329,10 +329,11 @@ ${whyUsPrompt}
    - Wrap all 4 cards inside <div class="contact-cards"> grid container.
    - Grid: 4 columns (desktop), 2-col (tablet), 1-col (mobile). Gap: 20px. max-width 1100px centered.
    - Cards (class="contact-card", each white background, border-radius: 16px, padding: 30px, text-align: center, box-shadow: 0 4px 12px rgba(0,0,0,0.02)):
-     - Card 1: Representative Name & Location. Icon: fa-user (red, font-size: 24px, margin-bottom: 15px). Top line: "${lead.name} Pvt Ltd" or "${lead.name}" (bold). Bottom line: "${lead.address || "Chennai, Tamil Nadu"}".
-     - Card 2: Phone info. Icon: fa-phone-alt (red, 24px). Top line: "${lead.phone}" (bold). Bottom line: "Call Us".
-     - Card 3: Email info. Icon: fa-envelope (red, 24px). Top line: "${lead.email || "info@gbtourism.in"}" (bold). Bottom line: "Drop a Mail".
-     - Card 4: Web URL. Icon: fa-globe (red, 24px). Top line: "${finalWebUrl}" (bold, word-break: break-all). Bottom line: "Visit Website".
+     - Card 1: Company name. Icon: fa-user (red, font-size: 24px, margin-bottom: 15px). Top line: "${lead.name}" (bold). Bottom line: "Company".
+     - Card 2: Address. Icon: fa-map-marker-alt (red, 24px). Top line: "${lead.address || "Chennai, Tamil Nadu"}" (bold). Bottom line: "Address". MUST come immediately before the phone card.
+     - Card 3: Phone info. Icon: fa-phone-alt (red, 24px). Top line: "${lead.phone}" (bold). Bottom line: "Call Us".
+     - Card 4: Email info. Icon: fa-envelope (red, 24px). Top line: "${lead.email || "info@gbtourism.in"}" (bold). Bottom line: "Drop a Mail".
+     - Do NOT include a "Visit Website" / website URL / fa-globe card.
    - Footer copyright centered text at the bottom, below a thin horizontal separator line:
      "© 2025 GRIP | <a href="https://gripforum.com" style="color: #E63946; text-decoration: none;">gripforum.com</a>"
 
