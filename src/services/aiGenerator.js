@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { postProcessGeneratedSite, getGripLogoUrl } from "./sitePostProcessor.js";
 import { uploadImageUrlToCloudinary } from "./cloudinary.js";
+import { getPublicBaseUrl } from "../utils/publicUrl.js";
 
 dotenv.config();
 
@@ -321,7 +322,8 @@ ${whyUsPrompt}
      - Add click listener to Refresh button to regenerate the math problem.
      - Add submit listener to the form:
        - Check if captcha input equals the correct sum. If not, show an alert "Incorrect captcha. Please try again." and prevent submission.
-       - If correct, make a fetch POST request to "/api/websites/${website._id}/contact" sending JSON containing name, email, phone, and message.
+       - If correct, make a fetch POST request to "${getPublicBaseUrl()}/api/websites/${website._id}/contact" sending JSON containing name, email, phone, and message.
+       - If the fetch response is not ok, try to parse the JSON response and alert the 'message' field (e.g., "Failed to send message: ..."). If parsing fails, fallback to alerting "An error occurred. Please try again later."
        - Display a clean success alert on successful post, reset form fields, and regenerate the captcha.
 
 6. CONTACT INFO CARDS & FOOTER (id="contact"):

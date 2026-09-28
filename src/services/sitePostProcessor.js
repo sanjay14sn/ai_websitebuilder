@@ -1156,6 +1156,10 @@ export function postProcessGeneratedSite(html = '', css = '', website = {}) {
   // Repair why-us AFTER logo injection so company logos never overwrite icons
   fixedHtml = normalizeHtmlStructure(fixedHtml, website);
 
+  // FIX RELATIVE API URLS FOR CONTACT FORM FETCH (for already generated sites)
+  const baseUrl = getPublicBaseUrl();
+  fixedHtml = fixedHtml.replace(/fetch\(\s*['"`]\/api\/websites/g, `fetch('${baseUrl}/api/websites`);
+
   return {
     html: fixedHtml,
     css: appendLayoutFixCss(mergedCss),
