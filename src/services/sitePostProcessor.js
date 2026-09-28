@@ -753,12 +753,8 @@ footer#contact {
 function fixLocalhostUrls(html) {
   const base = getPublicBaseUrl();
   return html
-    .replace(/https?:\/\/localhost:5001\//gi, `${base}/`)
-    .replace(/https?:\/\/127\.0\.0\.1:5001\//gi, `${base}/`)
-    .replace(/https?:\/\/localhost:5014\//gi, `${base}/`)
-    .replace(/https?:\/\/127\.0\.0\.1:5014\//gi, `${base}/`)
-    .replace(/https?:\/\/localhost:\d+\//gi, `${base}/`)
-    .replace(/https?:\/\/127\.0\.0\.1:\d+\//gi, `${base}/`);
+    .replace(/https?:\/\/localhost:\d+\/?/gi, `${base}/`)
+    .replace(/https?:\/\/127\.0\.0\.1:\d+\/?/gi, `${base}/`);
 }
 
 function fixGripLogoImages(html) {
@@ -1156,9 +1152,11 @@ export function postProcessGeneratedSite(html = '', css = '', website = {}) {
   // Repair why-us AFTER logo injection so company logos never overwrite icons
   fixedHtml = normalizeHtmlStructure(fixedHtml, website);
 
-  // FIX RELATIVE API URLS FOR CONTACT FORM FETCH (for already generated sites)
+  // FIX RELATIVE OR LOCALHOST API URLS FOR CONTACT FORM FETCH (for already generated sites)
   const baseUrl = getPublicBaseUrl();
-  fixedHtml = fixedHtml.replace(/fetch\(\s*['"`]\/api\/websites/g, `fetch('${baseUrl}/api/websites`);
+  fixedHtml = fixedHtml
+    .replace(/fetch\(\s*['"`](?:https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?)?\/api\/websites/gi, `fetch('${baseUrl}/api/websites`)
+    .replace(/fetch\(\s*['"`]\/api\/websites/g, `fetch('${baseUrl}/api/websites`);
 
   return {
     html: fixedHtml,

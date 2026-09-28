@@ -52,6 +52,8 @@ app.get('/', async (req, res) => {
       const Website = (await import('./models/Website.js')).default;
       const website = await Website.findOne({ slug: subdomain.toLowerCase() });
       if (website && website.status === 'PUBLISHED' && website.generatedHtml) {
+        const { postProcessGeneratedSite } = await import('./services/sitePostProcessor.js');
+        const processed = postProcessGeneratedSite(website.generatedHtml, website.generatedCss || '', website);
         const fullPage = `
           <!DOCTYPE html>
           <html lang="en">
@@ -60,11 +62,11 @@ app.get('/', async (req, res) => {
               <meta name="viewport" content="width=device-width, initial-scale=1.0" />
               <title>${website.companyName || 'Business Website'}</title>
               <style>
-                ${website.generatedCss || ''}
+                ${processed.css || ''}
               </style>
             </head>
             <body>
-              ${website.generatedHtml}
+              ${processed.html}
             </body>
           </html>
         `;
