@@ -564,13 +564,13 @@ export const submitContactForm = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.MAIL_USER || 'gripbusinessforum@gmail.com',
+        user: 'gripbusinessforum@gmail.com',
         pass: process.env.MAIL_PASSWORD || 'skffcrirzizrhjyo'
       }
     });
 
     const mailOptions = {
-      from: `"GRIP Website Builder" <${process.env.MAIL_USER || 'gripbusinessforum@gmail.com'}>`,
+      from: `"GRIP Website Builder" <gripbusinessforum@gmail.com>`,
       to: targetEmail,
       subject: `New Lead Inquiry - ${website.companyName}`,
       html: `
