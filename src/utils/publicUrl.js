@@ -3,8 +3,7 @@ export function getPublicBaseUrl() {
   if (process.env.PUBLIC_BASE_URL) {
     return process.env.PUBLIC_BASE_URL.replace(/\/$/, '');
   }
-  const port = process.env.PORT || 5001;
-  return `http://localhost:${port}`;
+  return 'https://api.gripforumglobal.com';
 }
 
 export function getLocalUploadsUrl(filename) {
